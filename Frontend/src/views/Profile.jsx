@@ -52,7 +52,7 @@ const Profile = () => {
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-3xl font-bold text-slate-900 mb-4">Perfil de Usuario</h2>
+      <h2 className="text-3xl font-bold text-slate-900 mb-4">Profile de Usuario</h2>
       <div className="text-lg">
         <p><strong>Nombre:</strong> {userData.name}</p>
         <p><strong>Email:</strong> {userData.email}</p>

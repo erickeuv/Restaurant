@@ -39,7 +39,7 @@ const Cart = () => {
 
             // Redirigir al usuario a su historial de compras o mostrar un mensaje de éxito
             alert('Compra registrada exitosamente');
-            navigate('/perfil'); // Redirigir al historial del perfil o mostrar algo
+            navigate('/Profile'); // Redirigir al historial del Profile o mostrar algo
         } catch (error) {
             console.error('Error al registrar la compra:', error);
             alert('Ocurrió un error al procesar la compra');

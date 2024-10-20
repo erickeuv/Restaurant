@@ -1,4 +1,4 @@
-// backend/routes/carrito.js
+// backend/Routes/carrito.js
 
 import express from 'express';
 import pool from '../config/database.js';
