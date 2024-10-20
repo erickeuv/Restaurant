@@ -88,6 +88,7 @@ router.delete('/:id', async (req, res) => {
     console.error('Error al eliminar el producto:', error);
     res.status(500).json({ error: 'Error al eliminar el producto' });
   }
+  
 });
 
 export default router;
