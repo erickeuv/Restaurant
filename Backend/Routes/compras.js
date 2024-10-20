@@ -4,6 +4,7 @@ import authenticateToken from '../middleware/authMiddleware.js'; // Usa el middl
 
 const router = express.Router();
 
+
 // Registrar una compra
 router.post('/', authenticateToken, async (req, res) => {
   const { cart, totalAmount } = req.body;

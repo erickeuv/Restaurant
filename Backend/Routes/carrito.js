@@ -18,6 +18,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+
 // Añadir producto al carrito
 router.post('/', async (req, res) => {
   const { productId, cantidad } = req.body; // Quitamos userId

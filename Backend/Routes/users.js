@@ -3,6 +3,7 @@ import pool from '../config/database.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+
 const router = express.Router();
 
 // Registrar un nuevo usuario
