@@ -24,7 +24,7 @@ const Profile = () => {
 
         try {
           // Obtener datos del usuario
-          const userResponse = await axios.get(`https://restaurant-jy3w.onrender.com/api//users/profile`, {
+          const userResponse = await axios.get('http://localhost:5001/api/users/profile', {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -32,7 +32,7 @@ const Profile = () => {
           setUserData(userResponse.data);
 
           // Obtener historial de compras
-          const purchasesResponse = await axios.get(`https://restaurant-jy3w.onrender.com/api//compras/historial`, {
+          const purchasesResponse = await axios.get('http://localhost:5001/api/compras/historial', {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -52,7 +52,7 @@ const Profile = () => {
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-3xl font-bold text-slate-900 mb-4">Profile de Usuario</h2>
+      <h2 className="text-3xl font-bold text-slate-900 mb-4">Perfil de Usuario</h2>
       <div className="text-lg">
         <p><strong>Nombre:</strong> {userData.name}</p>
         <p><strong>Email:</strong> {userData.email}</p>

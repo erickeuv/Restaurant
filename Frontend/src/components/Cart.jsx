@@ -1,36 +1,45 @@
 import React, { useContext } from 'react';
 import { CartContext } from '../context/CartContext';
-import { AuthContext } from '../context/AuthContext'; 
-import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext'; // Para verificar si el usuario está autenticado
+import { useNavigate } from 'react-router-dom'; // Para redirigir si es necesario
 import axios from 'axios';
 
 const Cart = () => {
-    const { cartItems, getTotal, clearCart, removeItem, decrementItem, incrementItem } = useContext(CartContext);
-    const { isAuthenticated, token } = useContext(AuthContext); 
+    const { cartItems, getTotal, clearCart, removeItem, decrementItem, incrementItem } = useContext(CartContext); // Asegúrate de que clearCart esté disponible aquí
+    const { isAuthenticated, token } = useContext(AuthContext); // Obtener el token y el estado de autenticación
     const navigate = useNavigate();
 
     const handlePayment = async () => {
         if (!isAuthenticated) {
+            // Redirigir a la página de login si el usuario no está autenticado
             navigate('/login');
             return;
         }
 
         try {
+            // Verificar si el token es válido (puedes agregar un console.log para depurar)
+            console.log("Token JWT:", token);
+
+            // Enviar los detalles de la compra al backend
             const purchaseData = {
-                cart: cartItems,
-                totalAmount: getTotal(),
+                cart: cartItems, // Incluye los artículos del carrito
+                totalAmount: getTotal(), // Incluye el total
             };
 
-            await axios.post(`https://restaurant-jy3w.onrender.com/api/compras`, purchaseData, {
+            // Llamar a la API de compras para registrar la compra
+            await axios.post('http://localhost:5001/api/compras', purchaseData, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
+                    Authorization: `Bearer ${token}`, // Enviar el token para autenticación
+                    'Content-Type': 'application/json' // Asegúrate de que el content type es correcto
+                }
             });
 
-            clearCart(); 
+            // Limpiar el carrito después de la compra
+            clearCart(); // Asegúrate de que esta función existe en CartContext
+
+            // Redirigir al usuario a su historial de compras o mostrar un mensaje de éxito
             alert('Compra registrada exitosamente');
-            navigate('/profile');
+            navigate('/perfil'); // Redirigir al historial del perfil o mostrar algo
         } catch (error) {
             console.error('Error al registrar la compra:', error);
             alert('Ocurrió un error al procesar la compra');
@@ -104,7 +113,7 @@ const Cart = () => {
                         <h3 className="text-lg font-semibold">Total: ${getTotal().toFixed(2)}</h3>
                         <button 
                             className="mt-4 w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded"
-                            onClick={handlePayment} 
+                            onClick={handlePayment} // Llamar a la función handlePayment al pagar
                         >
                             Pagar
                         </button>
