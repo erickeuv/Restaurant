@@ -20,7 +20,6 @@ function ProductList() {
     }
 
     fetchProducts();
-    
   }, []);
 
   // Función para categorizar los productos

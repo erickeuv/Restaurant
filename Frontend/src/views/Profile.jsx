@@ -24,7 +24,7 @@ const Profile = () => {
 
         try {
           // Obtener datos del usuario
-          const userResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/users/profile`, {
+          const userResponse = await axios.get(`https://restaurant-jy3w.onrender.com/api//users/profile`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -32,7 +32,7 @@ const Profile = () => {
           setUserData(userResponse.data);
 
           // Obtener historial de compras
-          const purchasesResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/compras/historial`, {
+          const purchasesResponse = await axios.get(`https://restaurant-jy3w.onrender.com/api//compras/historial`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

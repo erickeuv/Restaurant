@@ -13,7 +13,7 @@ function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/users/login`, {
+      const response = await axios.post(`https://restaurant-jy3w.onrender.com/api//users/login`, {
         email,
         password: contraseña, 
       });
