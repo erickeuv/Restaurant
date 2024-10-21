@@ -1,9 +1,4 @@
 
-
-
-
-
-
 INSERT INTO Products (name, price, category, description, image_url) VALUES
 -- Hamburguesas
 ('Hamburguesa Clásica', 8.99, 'Hamburgers', 'Carne de res, lechuga, tomate y queso cheddar', 'https://assets.unileversolutions.com/recipes-v2/218401.jpg'),
