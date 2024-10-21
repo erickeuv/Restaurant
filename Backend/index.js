@@ -30,7 +30,7 @@ app.use(helmet()); // Configurar seguridad HTTP headers
 // Configurar CORS
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Asegúrate de usar variables de entorno para la URL de producción
+    origin: '*', // Asegúrate de usar variables de entorno para la URL de producción
     credentials: true,
   })
 );
