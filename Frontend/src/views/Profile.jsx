@@ -65,7 +65,7 @@ const Profile = () => {
 
       <h3 className="text-2xl font-semibold text-slate-800 mt-6">Historial de Compras</h3>
       {purchaseHistory.length > 0 ? (
-        <ul className="list-disc list-inside mt-4 space-y-4">
+        <ul className="mt-4 space-y-4">
           {purchaseHistory.map((purchase) => (
             <li key={purchase.id} className="bg-gray-100 p-4 rounded-lg shadow-sm">
               <p className="font-semibold">Compra ID: {purchase.id} - Fecha: {new Date(purchase.purchase_date).toLocaleDateString()}</p>
