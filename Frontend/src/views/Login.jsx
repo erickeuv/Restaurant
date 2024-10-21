@@ -13,7 +13,7 @@ function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5001/api/users/login', {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/users/login`, {
         email,
         password: contraseña, 
       });
@@ -28,7 +28,6 @@ function Login() {
       alert('Error al iniciar sesión: ' + (error.response?.data?.error || 'Error de conexión'));
     }
   };
-  
 
   return (
     <section className="bg-white">

@@ -14,7 +14,7 @@ function Signup() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:5001/api/users/register', { // Asegúrate que esta sea la URL correcta
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/users/register`, { // Asegúrate que esta sea la URL correcta
         name: username,
         email: email,
         password: password, // Cambié 'contraseña' a 'password'

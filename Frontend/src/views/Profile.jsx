@@ -24,7 +24,7 @@ const Profile = () => {
 
         try {
           // Obtener datos del usuario
-          const userResponse = await axios.get('http://localhost:5001/api/users/profile', {
+          const userResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/users/profile`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -32,7 +32,7 @@ const Profile = () => {
           setUserData(userResponse.data);
 
           // Obtener historial de compras
-          const purchasesResponse = await axios.get('http://localhost:5001/api/compras/historial', {
+          const purchasesResponse = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/compras/historial`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

@@ -11,7 +11,7 @@ function ProductList() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await axios.get('http://localhost:5001/api/products');
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/products`);
         setProducts(response.data);
         categorizeProducts(response.data); // Llama a la función para categorizar productos
       } catch (error) {

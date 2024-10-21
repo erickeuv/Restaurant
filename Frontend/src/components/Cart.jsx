@@ -27,7 +27,7 @@ const Cart = () => {
             };
 
             // Llamar a la API de compras para registrar la compra
-            await axios.post('http://localhost:5001/api/compras', purchaseData, {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/compras`, purchaseData, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Enviar el token para autenticación
                     'Content-Type': 'application/json' // Asegúrate de que el content type es correcto

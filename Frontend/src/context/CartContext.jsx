@@ -8,6 +8,8 @@ export const CartProvider = ({ children }) => {
         const savedCart = localStorage.getItem('cartItems');
         return savedCart ? JSON.parse(savedCart) : [];
     });
+    
+    // Usar la variable de entorno para la URL del backend
     const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
 
     useEffect(() => {
