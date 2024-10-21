@@ -16,7 +16,7 @@ const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
 dotenv.config({ path: envFile });
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 
 // Obtener __dirname en ES6
 const __filename = fileURLToPath(import.meta.url);
