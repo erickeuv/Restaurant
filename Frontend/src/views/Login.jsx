@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import LoginImage from '../assets/img/Burger_Login.png';
 import { AuthContext } from '../context/AuthContext';
+import { API_URL } from '../config';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -16,7 +17,7 @@ function Login() {
     event.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5001/api/users/login', {
+      const response = await axios.post(`${API_URL}/users/login`, {
         email,
         password: contraseña,
       });

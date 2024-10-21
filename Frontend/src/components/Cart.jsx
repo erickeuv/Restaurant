@@ -3,6 +3,7 @@ import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext'; // Para verificar si el usuario está autenticado
 import { useNavigate } from 'react-router-dom'; // Para redirigir si es necesario
 import axios from 'axios';
+import { API_URL } from '../config'; 
 
 const Cart = () => {
     const { cartItems, getTotal, clearCart, removeItem, decrementItem, incrementItem } = useContext(CartContext); // Asegúrate de que clearCart esté disponible aquí
@@ -27,7 +28,7 @@ const Cart = () => {
             };
 
             // Llamar a la API de compras para registrar la compra
-            await axios.post('http://localhost:5001/api/compras', purchaseData, {
+            await axios.post(`${API_URL}/compras`, purchaseData, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Enviar el token para autenticación
                     'Content-Type': 'application/json' // Asegúrate de que el content type es correcto

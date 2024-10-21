@@ -6,13 +6,13 @@ import pool from './config/database.js';
 import usersRouter from './Routes/users.js';
 import carritoRouter from './Routes/carrito.js';
 import comprasRouter from './Routes/compras.js';
-import productRouter from './Routes/productRoutes.js'; // Importar la ruta de productos
+import productRouter from './Routes/productRoutes.js'; 
 import path from 'path';
 import { fileURLToPath } from 'url';
 import helmet from 'helmet';
 
 // Determinar qué archivo de variables de entorno cargar
-const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
+const envFile = process.env.NODE_ENV === '.env';
 dotenv.config({ path: envFile });
 
 const app = express();

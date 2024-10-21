@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import { CartContext } from '../context/CartContext';
 import axios from 'axios';
+import { API_URL } from '../config'; 
 
 function ProductList() {
   const { addItem } = useContext(CartContext);
@@ -11,7 +12,7 @@ function ProductList() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await axios.get('http://localhost:5001/api/products');
+        const response = await axios.get(`${API_URL}/products`);
         setProducts(response.data);
         categorizeProducts(response.data); // Llama a la función para categorizar productos
       } catch (error) {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { API_URL } from '../config';
 
 function Signup() {
   const [username, setUsername] = useState('');
@@ -14,7 +15,7 @@ function Signup() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:5001/api/users/register', { // Asegúrate que esta sea la URL correcta
+      const response = await axios.post(`${API_URL}/users/register`, { // Asegúrate que esta sea la URL correcta
         name: username,
         email: email,
         password: password, // Cambié 'contraseña' a 'password'

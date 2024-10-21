@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext'; // Asegúrate de importar tu contexto de autenticación
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
 
 const Profile = () => {
   const { isAuthenticated } = useContext(AuthContext); // Usar el estado de autenticación
@@ -24,7 +25,7 @@ const Profile = () => {
   
         try {
           // Obtener datos del usuario
-          const userResponse = await axios.get('http://localhost:5001/api/users/profile', {
+          const userResponse = await axios.get(`${API_URL}/users/profile`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -32,7 +33,7 @@ const Profile = () => {
           setUserData(userResponse.data);
   
           // Obtener historial de compras
-          const purchasesResponse = await axios.get('http://localhost:5001/api/compras/historial', {
+          const purchasesResponse = await axios.get(`${API_URL}/compras/historial`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

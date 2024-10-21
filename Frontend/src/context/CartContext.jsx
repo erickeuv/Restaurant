@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_URL } from '../config';
 
 export const CartContext = createContext();
 
@@ -8,7 +9,7 @@ export const CartProvider = ({ children }) => {
         const savedCart = localStorage.getItem('cartItems');
         return savedCart ? JSON.parse(savedCart) : [];
     });
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
+
 
     useEffect(() => {
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
@@ -17,7 +18,7 @@ export const CartProvider = ({ children }) => {
     // Función para guardar el carrito en el backend (opcional)
     const saveCartToBackend = async () => {
         try {
-            await axios.post(`${backendUrl}/api/carrito`, {
+            await axios.post(`${API_URL}/carrito`, {
                 items: cartItems.map(item => ({ productId: item.id, cantidad: item.quantity }))
             });
         } catch (error) {
