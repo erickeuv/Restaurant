@@ -12,7 +12,7 @@ function ProductList() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await axios.get(`https://restaurant-api-6zi5.onrender.com/api/products`);
+        const response = await axios.get(`${API_URL}/products`);
         setProducts(response.data);
         categorizeProducts(response.data); // Llama a la función para categorizar productos
       } catch (error) {

@@ -1,1 +1,1 @@
-export const API_URL = import.meta.env.VITE_BACKEND_URL;
+export const API_URL = 'https://restaurant-api-6zi5.onrender.com/api';
