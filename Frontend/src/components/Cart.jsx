@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext'; // Para verificar si el usuario está autenticado
 import { useNavigate } from 'react-router-dom'; // Para redirigir si es necesario
@@ -9,6 +9,7 @@ const Cart = () => {
     const { cartItems, getTotal, clearCart, removeItem, decrementItem, incrementItem } = useContext(CartContext); // Asegúrate de que clearCart esté disponible aquí
     const { isAuthenticated, token } = useContext(AuthContext); // Obtener el token y el estado de autenticación
     const navigate = useNavigate();
+    const [isProcessing, setIsProcessing] = useState(false); // Nuevo estado para evitar pagos duplicados
 
     const handlePayment = async () => {
         if (!isAuthenticated) {
@@ -18,7 +19,9 @@ const Cart = () => {
         }
 
         try {
-            // Verificar si el token es válido (puedes agregar un console.log para depurar)
+            setIsProcessing(true); // Evitar múltiples clics en "Pagar"
+
+            // Verificar si el token es válido
             console.log("Token JWT:", token);
 
             // Enviar los detalles de la compra al backend
@@ -36,14 +39,16 @@ const Cart = () => {
             });
 
             // Limpiar el carrito después de la compra
-            clearCart(); // Asegúrate de que esta función existe en CartContext
+            clearCart();
 
-            // Redirigir al usuario a su historial de compras o mostrar un mensaje de éxito
+            // Mostrar un mensaje de éxito o redirigir al historial de compras
             alert('Compra registrada exitosamente');
-        
+            navigate('/profile'); // Opcional: redirigir al perfil o historial de compras
         } catch (error) {
             console.error('Error al registrar la compra:', error);
             alert('Ocurrió un error al procesar la compra');
+        } finally {
+            setIsProcessing(false); // Permitir pagos nuevamente después de procesar
         }
     };
 
@@ -58,13 +63,9 @@ const Cart = () => {
                         {cartItems.map((item, index) => (
                             <li key={index} className="py-2 flex justify-between items-center">
                                 <div className="flex items-center">
-                                    <img 
-                                        src={item.imageUrl || 'https://via.placeholder.com/150'}
-                                        alt={item.title} 
-                                        className="w-12 h-12 object-cover rounded mr-4" 
-                                    />
+
                                     <div>
-                                        <span className="block font-semibold">{item.title}</span>
+                                        <span className="block font-semibold">{item.name}</span>
                                         <span className="text-sm text-gray-500 font-semibold">${Number(item.price).toFixed(2)}</span>
                                     </div>
                                 </div>
@@ -114,9 +115,10 @@ const Cart = () => {
                         <h3 className="text-lg font-semibold">Total: ${getTotal().toFixed(2)}</h3>
                         <button 
                             className="mt-4 w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded"
-                            onClick={handlePayment} // Llamar a la función handlePayment al pagar
+                            onClick={handlePayment} 
+                            disabled={isProcessing} // Deshabilitar el botón durante el procesamiento
                         >
-                            Pagar
+                            {isProcessing ? 'Procesando...' : 'Pagar'}
                         </button>
                     </div>
                 </>

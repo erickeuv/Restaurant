@@ -5,9 +5,14 @@ import { AuthContext } from '../context/AuthContext'; // Importa tu contexto de 
 function Header() {
   const { isAuthenticated, logout } = useContext(AuthContext); // Usa el contexto para manejar la autenticación
   const [dropdownOpen, setDropdownOpen] = useState(false); // Estado para manejar el menú desplegable
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // Estado para manejar el menú móvil
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen); // Alterna la visibilidad del dropdown
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen); // Alterna el menú móvil
   };
 
   return (
@@ -22,8 +27,8 @@ function Header() {
           />
         </Link>
 
-        {/* Links centrados con espacio entre ellos */}
-        <div className="flex-grow flex justify-center space-x-6">
+        {/* Links centrados con espacio entre ellos (Ocultos en móviles) */}
+        <div className="hidden lg:flex flex-grow justify-center space-x-6">
           <Link to="/" className="text-white hover:text-gray-300 transition duration-300">
             Home
           </Link>
@@ -80,8 +85,9 @@ function Header() {
 
         {/* Botón de menú para dispositivos móviles */}
         <button
-          className="relative h-6 w-6 text-center align-middle text-xs font-medium uppercase text-white transition-all hover:bg-gray-700 focus:bg-gray-700 lg:hidden"
+          className="lg:hidden relative h-6 w-6 text-center align-middle text-xs font-medium uppercase text-white transition-all hover:bg-gray-700 focus:bg-gray-700"
           type="button"
+          onClick={toggleMobileMenu}
         >
           <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
             <svg
@@ -96,6 +102,63 @@ function Header() {
           </span>
         </button>
       </div>
+
+      {/* Menú desplegable para móviles */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden mt-2 w-full bg-gray-800 rounded-lg py-2 px-4">
+          <Link
+            to="/"
+            className="block px-4 py-2 text-white hover:bg-gray-700 transition duration-300"
+            onClick={toggleMobileMenu}
+          >
+            Home
+          </Link>
+          <Link
+            to="/Menu"
+            className="block px-4 py-2 text-white hover:bg-gray-700 transition duration-300"
+            onClick={toggleMobileMenu}
+          >
+            Menu
+          </Link>
+          {!isAuthenticated ? (
+            <>
+              <Link
+                to="/Signup"
+                className="block px-4 py-2 text-white hover:bg-gray-700 transition duration-300"
+                onClick={toggleMobileMenu}
+              >
+                Sign Up
+              </Link>
+              <Link
+                to="/Login"
+                className="block px-4 py-2 text-white hover:bg-gray-700 transition duration-300"
+                onClick={toggleMobileMenu}
+              >
+                Login
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/profile"
+                className="block px-4 py-2 text-white hover:bg-gray-700 transition duration-300"
+                onClick={toggleMobileMenu}
+              >
+                Ver Perfil
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  toggleMobileMenu();
+                }}
+                className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700 transition duration-300"
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </nav>
   );
 }
