@@ -14,7 +14,7 @@ function Signup() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post(`https://restaurant-jy3w.onrender.com/api//users/register`, { // Asegúrate que esta sea la URL correcta
+      const response = await axios.post(`https://restaurant-jy3w.onrender.com/api/users/register`, {  // Asegúrate que esta sea la URL correcta
         name: username,
         email: email,
         password: password, // Cambié 'contraseña' a 'password'

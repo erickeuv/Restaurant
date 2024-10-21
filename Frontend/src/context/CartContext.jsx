@@ -9,23 +9,35 @@ export const CartProvider = ({ children }) => {
         return savedCart ? JSON.parse(savedCart) : [];
     });
     
-    // Usar la variable de entorno para la URL del backend
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
+    // URL del backend directamente
+    const backendUrl = 'https://restaurant-jy3w.onrender.com/api';
 
     useEffect(() => {
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }, [cartItems]);
 
-    // Función para guardar el carrito en el backend (opcional)
-    const saveCartToBackend = async () => {
+    // Función para guardar el carrito en el backend
+    const saveCartToBackend = async (token) => {
         try {
-            await axios.post(`${backendUrl}/api/carrito`, {
+            await axios.post(`${backendUrl}/carrito`, {
                 items: cartItems.map(item => ({ productId: item.id, cantidad: item.quantity }))
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,  // Asegúrate de incluir el token
+                    'Content-Type': 'application/json'
+                }
             });
         } catch (error) {
             console.error('Error al guardar el carrito:', error);
         }
     };
+
+    // Llamar a saveCartToBackend cuando cambie cartItems
+    useEffect(() => {
+        if (cartItems.length > 0) {
+            saveCartToBackend();
+        }
+    }, [cartItems]);
 
     const addItem = (item) => {
         setCartItems((prevItems) => {
@@ -40,21 +52,15 @@ export const CartProvider = ({ children }) => {
                 return [...prevItems, { ...item, quantity: 1 }];
             }
         });
-        saveCartToBackend(); // Guarda el carrito cada vez que se agrega un artículo
     };
 
     const removeItem = (itemToRemove) => {
-        setCartItems((prevItems) => {
-            const newItems = prevItems.filter((item) => item.id !== itemToRemove.id);
-            saveCartToBackend(); // Guarda el carrito cada vez que se elimina un artículo
-            return newItems;
-        });
+        setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemToRemove.id));
     };
 
     const decrementItem = (itemToDecrement) => {
         setCartItems((prevItems) => {
             const existingItem = prevItems.find((item) => item.id === itemToDecrement.id);
-            
             if (existingItem && existingItem.quantity > 1) {
                 return prevItems.map((item) =>
                     item.id === itemToDecrement.id
@@ -65,18 +71,16 @@ export const CartProvider = ({ children }) => {
                 return prevItems.filter((item) => item.id !== itemToDecrement.id);
             }
         });
-        saveCartToBackend(); // Guarda el carrito después de decrementar un artículo
     };
 
     const incrementItem = (itemToIncrement) => {
-        setCartItems((prevItems) => {
-            return prevItems.map((item) =>
+        setCartItems((prevItems) =>
+            prevItems.map((item) =>
                 item.id === itemToIncrement.id
                     ? { ...item, quantity: item.quantity + 1 }
                     : item
-            );
-        });
-        saveCartToBackend(); // Guarda el carrito después de incrementar un artículo
+            )
+        );
     };
 
     const getTotal = () => {
