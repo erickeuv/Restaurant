@@ -24,6 +24,7 @@ router.post('/', authenticateToken, async (req, res) => {
       'INSERT INTO purchases (user_id, email, total_amount) VALUES ($1, $2, $3) RETURNING id',
       [userId, email, totalAmount]
     );
+    
 
     const purchaseId = purchaseResult.rows[0].id;
 
@@ -78,10 +79,12 @@ router.post('/', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Hubo un problema al registrar la compra.' });
   }
 });
-
 // Obtener historial de compras del usuario autenticado
 router.get('/historial', authenticateToken, async (req, res) => {
-  const { id: userId } = req.user; // Obtener el userId del token decodificado
+  console.log('Middleware autenticado correctamente.'); // Agregar log para verificar si el middleware pasa
+
+  const { id: userId } = req.user;
+  console.log('User ID del token:', userId); // Verificar si el userId se obtiene correctamente
 
   try {
     // Obtener las compras del usuario
@@ -90,8 +93,10 @@ router.get('/historial', authenticateToken, async (req, res) => {
       [userId]
     );
 
+    // Verificar si el usuario tiene compras
     if (purchasesResult.rows.length === 0) {
-      return res.status(404).json({ message: 'No se encontraron compras para este usuario.' });
+      console.log("No se encontraron compras para este usuario.");  // Log para depuración
+      return res.status(200).json([]); // Devolver un array vacío con 200 OK
     }
 
     // Obtener los detalles de los productos comprados en cada compra
@@ -108,7 +113,7 @@ router.get('/historial', authenticateToken, async (req, res) => {
     }));
 
     // Enviar la lista de compras y sus productos
-    res.json(purchases);
+    res.status(200).json(purchases);
   } catch (error) {
     console.error('Error al obtener el historial de compras:', error.message);
     res.status(500).json({ error: 'Hubo un problema al obtener el historial de compras.' });
@@ -116,3 +121,6 @@ router.get('/historial', authenticateToken, async (req, res) => {
 });
 
 export default router;
+
+
+

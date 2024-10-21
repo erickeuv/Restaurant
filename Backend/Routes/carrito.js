@@ -8,8 +8,6 @@ const router = express.Router();
 // Obtener el carrito (puedes usar una sesión o cookies para identificar al carrito)
 router.get('/', async (req, res) => {
   try {
-    // Aquí podrías usar un método diferente para identificar el carrito,
-    // como usar cookies o una sesión
     const result = await pool.query('SELECT * FROM detalle_carrito'); // Si es anónimo
     res.json(result.rows);
   } catch (err) {

@@ -93,42 +93,37 @@ router.get('/profile', async (req, res) => {
 });
 
 // Actualizar el perfil del usuario autenticado
-router.patch('/profile', async (req, res) => {
-  const { name, email, password } = req.body;
-
+// Obtener el perfil del usuario autenticado
+router.get('/profile', async (req, res) => {
   try {
+    // Verificar si el token está presente en los headers
     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
     if (!token) {
       return res.status(401).json({ error: 'Token no proporcionado.' });
     }
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
-    const user = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.id]);
+    // Verificar el token y decodificar
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.SECRET_KEY);
+    } catch (err) {
+      return res.status(401).json({ error: 'Token inválido o ha expirado.' });
+    }
+
+    // Consulta para obtener los datos del usuario
+    const user = await pool.query('SELECT id, name, email FROM users WHERE id = $1', [decoded.id]);
 
     if (user.rows.length === 0) {
       return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
 
-    let hashedPassword = user.rows[0].password;
-    if (password) {
-      hashedPassword = await bcrypt.hash(password, 10);
-    }
-
-    const updatedUser = await pool.query(
-      'UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4 RETURNING *',
-      [
-        name || user.rows[0].name,
-        email || user.rows[0].email,
-        hashedPassword,
-        decoded.id,
-      ]
-    );
-
-    res.json(updatedUser.rows[0]);
+    // Enviar la información del usuario
+    res.json(user.rows[0]);
   } catch (error) {
-    console.error('Error al actualizar el perfil del usuario:', error);
-    res.status(500).json({ error: 'Hubo un error al actualizar el perfil del usuario.' });
+    console.error('Error al obtener el perfil del usuario:', error);
+    res.status(500).json({ error: 'Hubo un error al obtener el perfil del usuario.' });
   }
 });
+
 
 export default router;

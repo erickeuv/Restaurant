@@ -21,7 +21,7 @@ const Profile = () => {
           setError('No hay sesión activa. Por favor, inicia sesión.');
           return;
         }
-
+  
         try {
           // Obtener datos del usuario
           const userResponse = await axios.get('http://localhost:5001/api/users/profile', {
@@ -30,22 +30,26 @@ const Profile = () => {
             },
           });
           setUserData(userResponse.data);
-
+  
           // Obtener historial de compras
           const purchasesResponse = await axios.get('http://localhost:5001/api/compras/historial', {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-          setPurchaseHistory(purchasesResponse.data);
+  
+          // Si el historial está vacío, asignar un array vacío
+          setPurchaseHistory(purchasesResponse.data.length > 0 ? purchasesResponse.data : []);
+  
         } catch (err) {
-          setError(err.response?.data?.error || 'Error al obtener los datos del usuario');
+          setError(err.response?.data?.error || 'Error al obtener los datos del usuario'); 
         }
       };
-
+  
       fetchProfile();
     }
   }, [isAuthenticated, navigate]);
+  
 
   if (error) return <div className="text-red-500 text-center">{error}</div>;
   if (!userData) return <div className="text-center text-gray-500">Cargando...</div>;
