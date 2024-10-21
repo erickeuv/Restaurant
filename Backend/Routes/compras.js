@@ -13,7 +13,7 @@ router.post('/', authenticateToken, async (req, res) => {
     return res.status(400).json({ error: 'El carrito y el total son obligatorios.' });
   }
 
-  const { id: userId, email } = req.user; // Obtener el userId y email del token decodificado
+  const { id: userId } = req.user; // Obtener el userId del token decodificado
 
   try {
     // Iniciar una transacción
@@ -21,10 +21,9 @@ router.post('/', authenticateToken, async (req, res) => {
 
     // Insertar la compra en la tabla purchases
     const purchaseResult = await pool.query(
-      'INSERT INTO purchases (user_id, email, total_amount) VALUES ($1, $2, $3) RETURNING id',
-      [userId, email, totalAmount]
+      'INSERT INTO purchases (user_id, total_amount) VALUES ($1, $2) RETURNING id',
+      [userId, totalAmount]
     );
-    
 
     const purchaseId = purchaseResult.rows[0].id;
 
@@ -79,6 +78,7 @@ router.post('/', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Hubo un problema al registrar la compra.' });
   }
 });
+
 // Obtener historial de compras del usuario autenticado
 router.get('/historial', authenticateToken, async (req, res) => {
   console.log('Middleware autenticado correctamente.'); // Agregar log para verificar si el middleware pasa
