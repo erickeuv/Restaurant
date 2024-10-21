@@ -11,7 +11,7 @@ function ProductList() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/products`);
+        const response = await axios.get(`https://restaurant-jy3w.onrender.com/api/products`);
         setProducts(response.data);
         categorizeProducts(response.data); // Llama a la función para categorizar productos
       } catch (error) {
