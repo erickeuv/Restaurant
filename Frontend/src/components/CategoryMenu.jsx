@@ -5,7 +5,14 @@ const CategoryMenu = ({ categories }) => {
   const scrollToCategory = (category) => {
     const element = document.getElementById(category);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const offset = -100; // Ajusta este valor según el tamaño de tu header o cualquier elemento fijo en la parte superior
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset + offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
     }
   };
 
