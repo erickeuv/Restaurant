@@ -20,7 +20,7 @@ INSERT INTO Products (name, price, category, description, image_url) VALUES
 -- Bebidas
 ('Cerveza Artesanal', 4.50, 'Beverages', 'Cerveza de elaboración local', 'https://krossblogcl.com/wp-content/uploads/2022/12/regalos-originales.jpeg'),
 ('Refresco', 2.50, 'Beverages', 'Bebida carbonatada de cola', 'https://uvapanama.com/cdn/shop/products/af6o3ubey3qpvwfxqsqpaldvlany_effe2908-8486-43a5-9b21-4e03179994cf_1000x.png?v=1603294189'),
-('Agua Mineral', 1.50, 'Beverages', 'Agua embotellada', 'https://www.distribuidoralamartina.cl/wp-content/uploads/2021/04/vital-sin-gas600ml-1.jpeg'),
+('Agua Mineral', 1.50, 'Beverages', 'Agua embotellada', 'https://laoferta.cl/wp-content/images/56645-1.jpg'),
 
 -- Postres
 ('Cheesecake', 5.00, 'Desserts', 'Tarta cremosa de queso con base de galleta', 'https://peopleenespanol.com/thmb/8vzve3hmeCgC-SVqkvAmuXnMMBE=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/cheesecake-facil-con-leche-condensada-2000-4160526441114bf3ad8f3409586a2c8a.jpg'),
