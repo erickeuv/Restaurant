@@ -48,7 +48,7 @@ function ProductList() {
                   title={product.name}
                   imageUrl={product.image_url}
                   description={product.description}
-                  price={`$${product.price}`}
+                  price={`${product.price}`}
                   onAdd={() => addItem(product)}
                 />
               </div>

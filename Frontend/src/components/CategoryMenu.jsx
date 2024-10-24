@@ -22,7 +22,7 @@ const CategoryMenu = ({ categories }) => {
         <button 
           key={category}
           onClick={() => scrollToCategory(category)} 
-          className="bg-gray-300 text-black font-bold rounded-lg px-4 py-2 md:px-6 md:py-3 hover:bg-gray-500 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50" // Estilos optimizados
+          className="bg-gray-300 text-black font-bold rounded-lg px-4 py-2 md:px-4 md:py-3 hover:bg-gray-500 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50" // Estilos optimizados
           aria-label={`Ir a la categoría ${category}`} // Mejora de accesibilidad
         >
           {category}
