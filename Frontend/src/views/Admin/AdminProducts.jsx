@@ -29,17 +29,22 @@ const AdminProducts = () => {
   };
 
   const handleAddProduct = async () => {
+    if (!newProduct.name || !newProduct.price) {
+      setError('El nombre y el precio son obligatorios');
+      return;
+    }
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(`${API_URL}/products`, newProduct, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProducts([...products, response.data]);
-      setNewProduct({ name: '', price: '', category: '', description: '', image_url: '' }); // Resetear el formulario
+      setNewProduct({ name: '', price: '', category: '', description: '', image_url: '' });
     } catch (error) {
       setError('Error al añadir el producto');
     }
   };
+  
 
   const handleToggleProductStatus = async (productId) => {
     try {
