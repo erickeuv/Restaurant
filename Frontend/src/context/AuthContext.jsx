@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import jwt_decode from 'jwt-decode'; 
-
+import { default as jwt_decode } from 'jwt-decode'; // Ajuste en la importación
 
 // Crear el contexto de autenticación
 export const AuthContext = createContext();
