@@ -8,15 +8,13 @@ const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({ name: '', price: '', category: '', description: '', image_url: '' });
   const [error, setError] = useState(null);
-  const { userRole } = useContext(AuthContext); // Accede al rol del usuario
+  const { userRole } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirigir si el usuario no es administrador
     if (userRole !== 'admin') {
-      navigate('/'); // Redirige a la página principal o una página de acceso denegado
+      navigate('/');
     } else {
-      // Obtener la lista de productos si el usuario es administrador
       const fetchProducts = async () => {
         try {
           const response = await axios.get(`${API_URL}/products`);
@@ -46,32 +44,24 @@ const AdminProducts = () => {
       });
       setProducts([...products, response.data]);
       setNewProduct({ name: '', price: '', category: '', description: '', image_url: '' });
-      setError(null); // Limpia el mensaje de error en caso de éxito
+      setError(null);
     } catch (error) {
-      if (error.response && error.response.status === 403) {
-        setError('No tienes permisos para añadir productos');
-      } else {
-        setError('Error al añadir el producto');
-      }
+      setError(error.response?.status === 403 ? 'No tienes permisos para añadir productos' : 'Error al añadir el producto');
     }
   };
 
   const handleToggleProductStatus = async (productId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`${API_URL}/products/${productId}/deactivate`, {}, {
+      await axios.put(`${API_URL}/products/${productId}/toggle-active`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProducts(products.map(product => 
         product.id === productId ? { ...product, active: !product.active } : product
       ));
-      setError(null); // Limpia el mensaje de error en caso de éxito
+      setError(null);
     } catch (error) {
-      if (error.response && error.response.status === 403) {
-        setError('No tienes permisos para cambiar el estado del producto');
-      } else {
-        setError('Error al cambiar el estado del producto');
-      }
+      setError(error.response?.status === 403 ? 'No tienes permisos para cambiar el estado del producto' : 'Error al cambiar el estado del producto');
     }
   };
 
@@ -93,7 +83,10 @@ const AdminProducts = () => {
       {error && <div className="text-red-500">{error}</div>}
       <ul className="space-y-4">
         {products.map(product => (
-          <li key={product.id} className="p-4 border rounded-lg flex justify-between items-center">
+          <li
+            key={product.id}
+            className={`p-4 border rounded-lg flex justify-between items-center ${!product.active ? 'bg-gray-200 text-gray-500' : ''}`}
+          >
             <div>
               <p><strong>Nombre:</strong> {product.name}</p>
               <p><strong>Precio:</strong> ${product.price}</p>

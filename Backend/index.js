@@ -6,7 +6,7 @@ import pool from './config/database.js';
 import usersRouter from './Routes/users.js';
 import carritoRouter from './Routes/carrito.js';
 import comprasRouter from './Routes/compras.js';
-import productRouter from './Routes/productRoutes.js'; 
+import productRouter from './Routes/products.js'; 
 import path from 'path';
 import { fileURLToPath } from 'url';
 import helmet from 'helmet';

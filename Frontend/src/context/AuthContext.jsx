@@ -1,5 +1,4 @@
 import { createContext, useState, useEffect } from 'react';
-import jwt_decode from 'jwt-decode'; // Importación correcta
 
 // Crear el contexto de autenticación
 export const AuthContext = createContext();
@@ -9,17 +8,34 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [userRole, setUserRole] = useState(null);
 
+  // Decodificar el payload de un JWT sin librerías externas
+  const decodeToken = (token) => {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return null;
+    }
+  };
+
   // Función para manejar el inicio de sesión
   const login = (token) => {
     localStorage.setItem('token', token);
     setToken(token);
     setIsAuthenticated(true);
 
-    try {
-      const decodedToken = jwt_decode(token);
+    const decodedToken = decodeToken(token);
+    if (decodedToken) {
       setUserRole(decodedToken.role); // Asigna el rol desde el token decodificado
-    } catch (error) {
-      console.error("Error decoding token on login:", error);
+    } else {
       logout(); // En caso de error, cierra la sesión
     }
   };
@@ -36,17 +52,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const verifyToken = () => {
       if (token) {
-        try {
-          const decodedToken = jwt_decode(token);
-          if (decodedToken.exp * 1000 > Date.now()) { // Verifica si el token no ha expirado
-            setIsAuthenticated(true);
-            setUserRole(decodedToken.role);
-          } else {
-            logout(); // Cierra sesión si el token ha expirado
-          }
-        } catch (error) {
-          console.error("Error decoding token:", error);
-          logout(); // Cierra sesión si el token es inválido
+        const decodedToken = decodeToken(token);
+        if (decodedToken && decodedToken.exp * 1000 > Date.now()) {
+          setIsAuthenticated(true);
+          setUserRole(decodedToken.role);
+        } else {
+          logout(); // Cierra sesión si el token ha expirado o es inválido
         }
       }
     };

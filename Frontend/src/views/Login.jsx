@@ -17,23 +17,21 @@ function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-    setError(null); // Limpiar error previo
+    setError(null);
 
     try {
       const response = await axios.post(`${API_URL}/users/login`, {
         email,
         password: contraseña,
       });
-      if (response.status === 200) {
+
+      if (response.status === 200 && response.data.token) {
         const token = response.data.token;
-        if (token) {
-          login(token);
-          navigate('/profile');
-        } else {
-          setError('Error: No se recibió el token de autenticación.');
-        }
+        console.log("Token recibido:", token); // Confirmar estructura del token en la consola
+        login(token); // Pasar el token al contexto para decodificar y autenticar
+        navigate('/profile'); // Redirige al perfil tras iniciar sesión correctamente
       } else {
-        setError('Error al iniciar sesión');
+        setError('Error: No se recibió el token de autenticación o respuesta inesperada del servidor.');
       }
     } catch (error) {
       if (error.response?.status === 401) {
