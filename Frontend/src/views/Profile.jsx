@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../config';
 
 const Profile = () => {
-  const { isAuthenticated } = useContext(AuthContext); // Usar el estado de autenticación
+  const { isAuthenticated, userRole } = useContext(AuthContext); // Agregar el rol del usuario
   const [userData, setUserData] = useState(null);
   const [purchaseHistory, setPurchaseHistory] = useState([]);
   const [error, setError] = useState(null);
@@ -13,7 +13,6 @@ const Profile = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      // Si no está autenticado, redirigir a la página de login
       navigate('/login');
     } else {
       const fetchProfile = async () => {
@@ -22,35 +21,35 @@ const Profile = () => {
           setError('No hay sesión activa. Por favor, inicia sesión.');
           return;
         }
-  
+
         try {
-          // Obtener datos del usuario
           const userResponse = await axios.get(`${API_URL}/users/profile`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
           setUserData(userResponse.data);
-  
-          // Obtener historial de compras
+
           const purchasesResponse = await axios.get(`${API_URL}/compras/historial`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-  
-          // Si el historial está vacío, asignar un array vacío
+
           setPurchaseHistory(purchasesResponse.data.length > 0 ? purchasesResponse.data : []);
-  
         } catch (err) {
           setError(err.response?.data?.error || 'Error al obtener los datos del usuario'); 
         }
       };
-  
+
       fetchProfile();
     }
   }, [isAuthenticated, navigate]);
-  
+
+  // Función para manejar el clic del botón de administración
+  const handleAdminClick = () => {
+    navigate('/admin/products'); // Redirige a la vista de administración de productos
+  };
 
   if (error) return <div className="text-red-500 text-center">{error}</div>;
   if (!userData) return <div className="text-center text-gray-500">Cargando...</div>;
@@ -62,6 +61,15 @@ const Profile = () => {
         <p><strong>Nombre:</strong> {userData.name}</p>
         <p><strong>Email:</strong> {userData.email}</p>
       </div>
+
+      {userRole === 'admin' && ( // Condicional para mostrar el botón solo a administradores
+        <button
+          onClick={handleAdminClick}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Administrar Productos
+        </button>
+      )}
 
       <h3 className="text-2xl font-semibold text-slate-800 mt-6">Historial de Compras</h3>
       {purchaseHistory.length > 0 ? (

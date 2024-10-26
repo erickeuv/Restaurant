@@ -8,7 +8,8 @@ CREATE TABLE users (
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    role TEXT DEFAULT 'user'
 );
 
 -- Tabla: Products
@@ -19,7 +20,8 @@ CREATE TABLE Products (
     price NUMERIC(10, 2) NOT NULL,
     category TEXT,
     description TEXT,
-    image_url TEXT
+    image_url TEXT,
+    active BOOLEAN DEFAULT true
 );
 
 -- Agregar restricción de unicidad para evitar duplicados en la tabla Products

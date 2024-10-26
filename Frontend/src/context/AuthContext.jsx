@@ -1,28 +1,39 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
+import jwt_decode from 'jwt-decode'; // Necesitarás instalar jwt-decode: npm install jwt-decode
 
 // Crear el contexto de autenticación
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token')); // Inicia con true si hay un token
-  const [token, setToken] = useState(localStorage.getItem('token')); // Almacena el token inicial
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [userRole, setUserRole] = useState(null); // Estado para el rol del usuario
+
+  useEffect(() => {
+    if (token) {
+      const decodedToken = jwt_decode(token); // Decodifica el token para obtener la información del usuario
+      setUserRole(decodedToken.role); // Asigna el rol desde el token decodificado
+    }
+  }, [token]);
 
   const login = (token) => {
-    // Guardar el token en localStorage y actualizar el estado
     localStorage.setItem('token', token);
     setToken(token);
     setIsAuthenticated(true);
+
+    const decodedToken = jwt_decode(token); // Decodifica el token para obtener la información del usuario
+    setUserRole(decodedToken.role); // Asigna el rol
   };
 
   const logout = () => {
-    // Eliminar el token y actualizar el estado
     localStorage.removeItem('token');
     setToken(null);
     setIsAuthenticated(false);
+    setUserRole(null); // Limpia el rol al cerrar sesión
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, token, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, token, userRole, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
