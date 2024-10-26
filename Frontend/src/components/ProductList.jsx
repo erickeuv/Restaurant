@@ -12,7 +12,7 @@ function ProductList() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await axios.get(`${API_URL}/products`);
+        const response = await axios.get(`${API_URL}/products/menu`);
         setProducts(response.data);
         categorizeProducts(response.data); // Llama a la función para categorizar productos
       } catch (error) {
@@ -37,18 +37,19 @@ function ProductList() {
   };
 
   return (
-    <div className="flex flex-col"> {/* Flexbox para organizar las tarjetas */}
+    <div className="flex flex-col">
       {Object.keys(categorizedProducts).map((category) => (
-        <div key={category} id={category} className="my-8"> {/* Añade un ID para el desplazamiento */}
+        <div key={category} id={category} className="my-8">
           <h2 className="text-2xl font-bold text-center">{category}</h2>
-          <div className="flex flex-wrap justify-between"> {/* Aseguramos que haya 3 columnas */}
+          <div className="flex flex-wrap justify-between">
             {categorizedProducts[category].map((product) => (
-              <div key={product.id} className="w-full md:w-1/2 lg:w-1/3 p-2"> {/* Cada tarjeta ocupa 1/3 del ancho en pantallas grandes */}
+              <div key={product.id} className="w-full md:w-1/2 lg:w-1/3 p-2">
                 <ProductCard
                   title={product.name}
                   imageUrl={product.image_url}
                   description={product.description}
                   price={`${product.price}`}
+                  isActive={product.active} // Pasamos el estado activo del producto
                   onAdd={() => addItem(product)}
                 />
               </div>

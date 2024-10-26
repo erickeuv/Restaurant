@@ -17,10 +17,17 @@ const AdminProducts = () => {
     } else {
       const fetchProducts = async () => {
         try {
-          const response = await axios.get(`${API_URL}/products`);
+          const token = localStorage.getItem('token');
+          const response = await axios.get(`${API_URL}/products`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
           setProducts(response.data);
         } catch (error) {
-          setError('Error al obtener la lista de productos');
+          if (error.response?.status === 401) {
+            setError('No estás autorizado para ver los productos. Inicia sesión nuevamente.');
+          } else {
+            setError('Error al obtener la lista de productos');
+          }
         }
       };
       fetchProducts();
