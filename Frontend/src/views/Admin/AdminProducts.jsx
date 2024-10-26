@@ -53,11 +53,11 @@ const AdminProducts = () => {
   const handleToggleProductStatus = async (productId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`${API_URL}/products/${productId}/toggle-active`, {}, {
+      const response = await axios.put(`${API_URL}/products/${productId}/toggle-active`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProducts(products.map(product => 
-        product.id === productId ? { ...product, active: !product.active } : product
+        product.id === productId ? response.data : product
       ));
       setError(null);
     } catch (error) {
