@@ -1,11 +1,11 @@
 import express from 'express';
 import pool from '../config/database.js';
-import authenticateToken from '../middleware/authMiddleware.js'; // Usa el middleware de autenticación
+import { authMiddleware } from '../middleware/authMiddleware.js'; // Usa el middleware de autenticación correctamente
 
 const router = express.Router();
 
 // Registrar una compra
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   const { cart, totalAmount } = req.body;
 
   // Verifica si hay un carrito y un total
@@ -80,7 +80,7 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // Obtener historial de compras del usuario autenticado
-router.get('/historial', authenticateToken, async (req, res) => {
+router.get('/historial', authMiddleware, async (req, res) => {
   console.log('Middleware autenticado correctamente.'); // Agregar log para verificar si el middleware pasa
 
   const { id: userId } = req.user;
@@ -121,6 +121,3 @@ router.get('/historial', authenticateToken, async (req, res) => {
 });
 
 export default router;
-
-
-
