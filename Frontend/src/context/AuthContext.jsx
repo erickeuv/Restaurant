@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import * as jwt_decode from 'jwt-decode';
-
+import jwt_decode from 'jwt-decode'; // Importación correcta
 
 // Crear el contexto de autenticación
 export const AuthContext = createContext();
@@ -10,17 +9,6 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [userRole, setUserRole] = useState(null);
 
-  // Función para verificar si el token es válido
-  const isTokenValid = (token) => {
-    try {
-      const decodedToken = jwt_decode(token);
-      return decodedToken.exp * 1000 > Date.now(); // Verifica si el token no ha expirado
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      return false;
-    }
-  };
-
   // Función para manejar el inicio de sesión
   const login = (token) => {
     localStorage.setItem('token', token);
@@ -29,7 +17,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const decodedToken = jwt_decode(token);
-      setUserRole(decodedToken.role); // Asigna el rol
+      setUserRole(decodedToken.role); // Asigna el rol desde el token decodificado
     } catch (error) {
       console.error("Error decoding token on login:", error);
       logout(); // En caso de error, cierra la sesión
@@ -46,13 +34,23 @@ export const AuthProvider = ({ children }) => {
 
   // Verificación inicial del token al cargar el componente
   useEffect(() => {
-    if (token && isTokenValid(token)) {
-      setIsAuthenticated(true);
-      const decodedToken = jwt_decode(token);
-      setUserRole(decodedToken.role);
-    } else {
-      logout(); // Si el token no es válido, cierra sesión
-    }
+    const verifyToken = () => {
+      if (token) {
+        try {
+          const decodedToken = jwt_decode(token);
+          if (decodedToken.exp * 1000 > Date.now()) { // Verifica si el token no ha expirado
+            setIsAuthenticated(true);
+            setUserRole(decodedToken.role);
+          } else {
+            logout(); // Cierra sesión si el token ha expirado
+          }
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          logout(); // Cierra sesión si el token es inválido
+        }
+      }
+    };
+    verifyToken();
   }, [token]);
 
   return (

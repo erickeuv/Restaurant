@@ -10,12 +10,15 @@ function Login() {
   const [contraseña, setContraseña] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(null);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
+    setError(null); // Limpiar error previo
+
     try {
       const response = await axios.post(`${API_URL}/users/login`, {
         email,
@@ -23,18 +26,22 @@ function Login() {
       });
       if (response.status === 200) {
         const token = response.data.token;
-        login(token);
-        navigate('/profile');
+        if (token) {
+          login(token);
+          navigate('/profile');
+        } else {
+          setError('Error: No se recibió el token de autenticación.');
+        }
       } else {
-        alert('Error al iniciar sesión');
+        setError('Error al iniciar sesión');
       }
     } catch (error) {
       if (error.response?.status === 401) {
-        alert('Credenciales incorrectas. Por favor, intenta nuevamente.');
+        setError('Credenciales incorrectas. Por favor, intenta nuevamente.');
       } else if (error.response?.status === 500) {
-        alert('Error del servidor. Intenta más tarde.');
+        setError('Error del servidor. Intenta más tarde.');
       } else {
-        alert('Error al iniciar sesión: ' + (error.response?.data?.error || 'Error de conexión'));
+        setError('Error al iniciar sesión: ' + (error.response?.data?.error || 'Error de conexión'));
       }
     } finally {
       setLoading(false);
@@ -47,6 +54,7 @@ function Login() {
         <div className="w-full max-w-md bg-gray-100 rounded-lg shadow-lg">
           <div className="p-8 space-y-4">
             <h1 className="text-2xl font-bold text-center text-gray-800">Iniciar Sesión</h1>
+            {error && <p className="text-sm font-medium text-red-500 text-center">{error}</p>}
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-800">Email:</label>

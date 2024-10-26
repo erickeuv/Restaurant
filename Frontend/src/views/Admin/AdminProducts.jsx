@@ -1,27 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../../config';
+import { AuthContext } from '../../context/AuthContext';
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({ name: '', price: '', category: '', description: '', image_url: '' });
   const [error, setError] = useState(null);
+  const { userRole } = useContext(AuthContext); // Accede al rol del usuario
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Obtener la lista de productos
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/products`);
-        setProducts(response.data);
-      } catch (error) {
-        setError('Error al obtener la lista de productos');
-      }
-    };
-
-    fetchProducts();
-  }, []);
+    // Redirigir si el usuario no es administrador
+    if (userRole !== 'admin') {
+      navigate('/'); // Redirige a la página principal o una página de acceso denegado
+    } else {
+      // Obtener la lista de productos si el usuario es administrador
+      const fetchProducts = async () => {
+        try {
+          const response = await axios.get(`${API_URL}/products`);
+          setProducts(response.data);
+        } catch (error) {
+          setError('Error al obtener la lista de productos');
+        }
+      };
+      fetchProducts();
+    }
+  }, [userRole, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -40,11 +46,15 @@ const AdminProducts = () => {
       });
       setProducts([...products, response.data]);
       setNewProduct({ name: '', price: '', category: '', description: '', image_url: '' });
+      setError(null); // Limpia el mensaje de error en caso de éxito
     } catch (error) {
-      setError('Error al añadir el producto');
+      if (error.response && error.response.status === 403) {
+        setError('No tienes permisos para añadir productos');
+      } else {
+        setError('Error al añadir el producto');
+      }
     }
   };
-  
 
   const handleToggleProductStatus = async (productId) => {
     try {
@@ -55,8 +65,13 @@ const AdminProducts = () => {
       setProducts(products.map(product => 
         product.id === productId ? { ...product, active: !product.active } : product
       ));
+      setError(null); // Limpia el mensaje de error en caso de éxito
     } catch (error) {
-      setError('Error al cambiar el estado del producto');
+      if (error.response && error.response.status === 403) {
+        setError('No tienes permisos para cambiar el estado del producto');
+      } else {
+        setError('Error al cambiar el estado del producto');
+      }
     }
   };
 
