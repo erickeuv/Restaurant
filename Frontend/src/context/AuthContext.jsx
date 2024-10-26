@@ -1,36 +1,59 @@
 import { createContext, useState, useEffect } from 'react';
-import { default as jwt_decode } from 'jwt-decode'; // Ajuste en la importación
+import * as jwt_decode from 'jwt-decode';
+
 
 // Crear el contexto de autenticación
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [userRole, setUserRole] = useState(null); // Estado para el rol del usuario
+  const [userRole, setUserRole] = useState(null);
 
-  useEffect(() => {
-    if (token) {
-      const decodedToken = jwt_decode(token); // Decodifica el token para obtener la información del usuario
-      setUserRole(decodedToken.role); // Asigna el rol desde el token decodificado
+  // Función para verificar si el token es válido
+  const isTokenValid = (token) => {
+    try {
+      const decodedToken = jwt_decode(token);
+      return decodedToken.exp * 1000 > Date.now(); // Verifica si el token no ha expirado
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return false;
     }
-  }, [token]);
+  };
 
+  // Función para manejar el inicio de sesión
   const login = (token) => {
     localStorage.setItem('token', token);
     setToken(token);
     setIsAuthenticated(true);
 
-    const decodedToken = jwt_decode(token); // Decodifica el token para obtener la información del usuario
-    setUserRole(decodedToken.role); // Asigna el rol
+    try {
+      const decodedToken = jwt_decode(token);
+      setUserRole(decodedToken.role); // Asigna el rol
+    } catch (error) {
+      console.error("Error decoding token on login:", error);
+      logout(); // En caso de error, cierra la sesión
+    }
   };
 
+  // Función para manejar el cierre de sesión
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
     setIsAuthenticated(false);
     setUserRole(null); // Limpia el rol al cerrar sesión
   };
+
+  // Verificación inicial del token al cargar el componente
+  useEffect(() => {
+    if (token && isTokenValid(token)) {
+      setIsAuthenticated(true);
+      const decodedToken = jwt_decode(token);
+      setUserRole(decodedToken.role);
+    } else {
+      logout(); // Si el token no es válido, cierra sesión
+    }
+  }, [token]);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, token, userRole, login, logout }}>
