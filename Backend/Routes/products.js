@@ -7,8 +7,8 @@ const router = express.Router();
 // Obtener todos los productos (para administración)
 router.get('/', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM products');
-    res.json(result.rows); // Devuelve todos los productos, independientemente de su estado
+    const result = await pool.query('SELECT * FROM products'); // Obtener todos los productos, sin filtrar por estado
+    res.json(result.rows);
   } catch (error) {
     console.error('Error al obtener los productos:', error);
     res.status(500).json({ error: 'Error al obtener los productos' });
@@ -18,11 +18,26 @@ router.get('/', authMiddleware, adminMiddleware, async (req, res) => {
 // Obtener productos activos para el menú
 router.get('/menu', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM products');
-    res.json(result.rows); // Devuelve todos los productos para que el frontend decida el estilo de los inactivos
+    const result = await pool.query('SELECT * FROM products WHERE active = true');
+    res.json(result.rows);
   } catch (error) {
     console.error('Error al obtener los productos del menú:', error);
     res.status(500).json({ error: 'Error al obtener los productos del menú' });
+  }
+});
+
+// Obtener un producto activo por ID
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('SELECT * FROM products WHERE id = $1 AND active = true', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error al obtener el producto:', error);
+    res.status(500).json({ error: 'Error al obtener el producto' });
   }
 });
 
@@ -31,8 +46,8 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
   const { name, price, category, description, image_url } = req.body;
   try {
     const result = await pool.query(
-      'INSERT INTO products (name, price, category, description, image_url, active) VALUES ($1, $2, $3, $4, $5, true) RETURNING *',
-      [name, price, category, description, image_url]
+      'INSERT INTO products (name, price, category, description, image_url, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [name, price, category, description, image_url, true] // Por defecto, el producto se crea como activo
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
