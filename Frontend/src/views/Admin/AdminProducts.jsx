@@ -83,7 +83,7 @@ const AdminProducts = () => {
         <input type="text" name="category" value={newProduct.category} onChange={handleInputChange} placeholder="Categoría" className="mb-2 p-2 border" />
         <input type="text" name="description" value={newProduct.description} onChange={handleInputChange} placeholder="Descripción" className="mb-2 p-2 border" />
         <input type="text" name="image_url" value={newProduct.image_url} onChange={handleInputChange} placeholder="URL de Imagen" className="mb-2 p-2 border" />
-        <button onClick={handleAddProduct} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Añadir Producto</button>
+        <button onClick={handleAddProduct} className="mt-4 bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300">Añadir Producto</button>
       </div>
 
       <h3 className="text-2xl font-semibold mb-4">Lista de Productos</h3>
