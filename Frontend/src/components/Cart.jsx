@@ -21,8 +21,6 @@ const Cart = () => {
         try {
             setIsProcessing(true); // Evitar múltiples clics en "Pagar"
 
-            // Verificar si el token es válido
-            console.log("Token JWT:", token);
 
             // Enviar los detalles de la compra al backend
             const purchaseData = {

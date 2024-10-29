@@ -27,9 +27,9 @@ function Login() {
 
       if (response.status === 200 && response.data.token) {
         const token = response.data.token;
-        console.log("Token recibido:", token); // Confirmar estructura del token en la consola
         login(token); // Pasar el token al contexto para decodificar y autenticar
-        navigate('/profile'); // Redirige al perfil tras iniciar sesión correctamente
+        // Asegura que el contexto esté actualizado antes de navegar
+        setTimeout(() => navigate('/profile'), 0); 
       } else {
         setError('Error: No se recibió el token de autenticación o respuesta inesperada del servidor.');
       }

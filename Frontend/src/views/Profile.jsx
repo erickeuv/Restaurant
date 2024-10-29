@@ -1,28 +1,29 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthContext'; // Asegúrate de importar tu contexto de autenticación
+import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../config';
 
 const Profile = () => {
-  const { isAuthenticated, userRole } = useContext(AuthContext); // Agregar el rol del usuario
+  const { isAuthenticated, userRole, token } = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
   const [purchaseHistory, setPurchaseHistory] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true); // Estado de carga inicial
   const navigate = useNavigate();
 
+  // Redirige al login si no hay autenticación una vez que se verifica
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !loading) {
       navigate('/login');
-    } else {
-      const fetchProfile = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('No hay sesión activa. Por favor, inicia sesión.');
-          return;
-        }
+    }
+  }, [isAuthenticated, loading, navigate]);
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (isAuthenticated && token) {
         try {
+          // Solicitar datos del perfil
           const userResponse = await axios.get(`${API_URL}/users/profile`, {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -30,29 +31,28 @@ const Profile = () => {
           });
           setUserData(userResponse.data);
 
+          // Solicitar historial de compras
           const purchasesResponse = await axios.get(`${API_URL}/compras/historial`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-
           setPurchaseHistory(purchasesResponse.data.length > 0 ? purchasesResponse.data : []);
         } catch (err) {
-          setError(err.response?.data?.error || 'Error al obtener los datos del usuario'); 
+          setError(err.response?.data?.error || 'Error al obtener los datos del usuario');
+        } finally {
+          setLoading(false); // Finaliza la carga
         }
-      };
+      } else {
+        setLoading(false); // Finaliza la carga si no hay autenticación
+      }
+    };
 
-      fetchProfile();
-    }
-  }, [isAuthenticated, navigate]);
+    fetchProfile();
+  }, [isAuthenticated, token]);
 
-  // Función para manejar el clic del botón de administración
-  const handleAdminClick = () => {
-    navigate('/admin/products'); // Redirige a la vista de administración de productos
-  };
-
+  if (loading) return <div className="text-center text-gray-500">Cargando...</div>; // Muestra una pantalla de carga
   if (error) return <div className="text-red-500 text-center">{error}</div>;
-  if (!userData) return <div className="text-center text-gray-500">Cargando...</div>;
 
   return (
     <div className="container mx-auto p-6 bg-white shadow-md rounded-lg">
@@ -62,9 +62,9 @@ const Profile = () => {
         <p><strong>Email:</strong> {userData.email}</p>
       </div>
 
-      {userRole === 'admin' && ( // Condicional para mostrar el botón solo a administradores
+      {userRole === 'admin' && (
         <button
-          onClick={handleAdminClick}
+          onClick={() => navigate('/admin/products')}
           className="mt-4 bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300"
         >
           Administrar Productos

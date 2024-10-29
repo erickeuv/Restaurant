@@ -3,7 +3,8 @@ import { createContext, useState, useEffect } from 'react';
 // Crear el contexto de autenticación
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+// Exportación por defecto de AuthProvider
+const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [userRole, setUserRole] = useState(null);
@@ -51,10 +52,12 @@ export const AuthProvider = ({ children }) => {
   // Verificación inicial del token al cargar el componente
   useEffect(() => {
     const verifyToken = () => {
-      if (token) {
-        const decodedToken = decodeToken(token);
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
+        const decodedToken = decodeToken(storedToken);
         if (decodedToken && decodedToken.exp * 1000 > Date.now()) {
           setIsAuthenticated(true);
+          setToken(storedToken); // Asegúrate de sincronizar el token de localStorage al estado
           setUserRole(decodedToken.role);
         } else {
           logout(); // Cierra sesión si el token ha expirado o es inválido
@@ -62,7 +65,7 @@ export const AuthProvider = ({ children }) => {
       }
     };
     verifyToken();
-  }, [token]);
+  }, []); // Solo se ejecuta al montar el componente
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, token, userRole, login, logout }}>
@@ -70,3 +73,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;

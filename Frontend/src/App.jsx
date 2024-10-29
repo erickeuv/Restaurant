@@ -12,7 +12,7 @@ import AdminProducts from './views/Admin/AdminProducts';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute'; 
-import { AuthProvider } from './context/AuthContext'; 
+import AuthProvider, { AuthContext } from './context/AuthContext';
 
 function App() {
   return (
