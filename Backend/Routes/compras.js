@@ -84,7 +84,8 @@ router.get('/historial', authMiddleware, async (req, res) => {
 
   try {
     const purchasesResult = await pool.query(
-      `SELECT p.id as purchase_id, p.purchase_date, p.total_amount,
+      `SELECT p.id as purchase_id, p.purchase_date, 
+              CAST(p.total_amount AS FLOAT) as total_amount,
               pi.product_id, pi.product_name, pi.category, pi.description,
               pi.image_url, pi.price, pi.quantity, pi.subtotal
        FROM purchases p
