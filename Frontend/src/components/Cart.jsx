@@ -13,35 +13,42 @@ const Cart = () => {
 
     const handlePayment = async () => {
         if (!isAuthenticated) {
-            navigate('/login');
+            navigate('/login'); // Redirige al login si no está autenticado
             return;
         }
-
+    
         try {
             setIsProcessing(true);
-
+    
             const purchaseData = {
-                cart: cartItems,
+                user_id: userId, // Solo enviar user_id si está autenticado
+                cart: cartItems.map(item => ({
+                    productId: item.id,
+                    quantity: item.quantity,
+                    price: item.price,
+                    name: item.name
+                })),
                 totalAmount: getTotal(),
             };
-
+    
             await axios.post(`${API_URL}/compras`, purchaseData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-
+    
             clearCart();
             alert('Compra registrada exitosamente');
             navigate('/profile');
         } catch (error) {
             console.error('Error al registrar la compra:', error);
-            alert('Ocurrió un error al procesar la compra. Inténtalo de nuevo.');
+            alert(error.response?.data?.error || 'Ocurrió un error al procesar la compra. Inténtalo de nuevo.');
         } finally {
             setIsProcessing(false);
         }
     };
+    
 
     return (
         <div className="sticky top-48 bg-white shadow-lg rounded-lg p-4 m-4 w-full max-w-xs">
