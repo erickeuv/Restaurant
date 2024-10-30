@@ -79,45 +79,71 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// Obtener historial de compras del usuario autenticado
 router.get('/historial', authMiddleware, async (req, res) => {
-  console.log('Middleware autenticado correctamente.'); // Agregar log para verificar si el middleware pasa
-
   const { id: userId } = req.user;
-  console.log('User ID del token:', userId); // Verificar si el userId se obtiene correctamente
 
   try {
-    // Obtener las compras del usuario
     const purchasesResult = await pool.query(
-      'SELECT * FROM purchases WHERE user_id = $1 ORDER BY purchase_date DESC',
+      `SELECT p.id as purchase_id, p.purchase_date, p.total_amount,
+              pi.product_id, pi.product_name, pi.category, pi.description,
+              pi.image_url, pi.price, pi.quantity, pi.subtotal
+       FROM purchases p
+       JOIN purchase_items pi ON p.id = pi.purchase_id
+       WHERE p.user_id = $1
+       ORDER BY p.purchase_date DESC`,
       [userId]
     );
 
-    // Verificar si el usuario tiene compras
     if (purchasesResult.rows.length === 0) {
-      console.log("No se encontraron compras para este usuario.");  // Log para depuración
-      return res.status(200).json([]); // Devolver un array vacío con 200 OK
+      return res.status(200).json([]); // Si no hay compras, devuelve un array vacío
     }
 
-    // Obtener los detalles de los productos comprados en cada compra
-    const purchases = await Promise.all(purchasesResult.rows.map(async (purchase) => {
-      const itemsResult = await pool.query(
-        'SELECT * FROM purchase_items WHERE purchase_id = $1',
-        [purchase.id]
-      );
+    // Organiza los datos en un formato estructurado
+    const purchases = purchasesResult.rows.reduce((acc, row) => {
+      const {
+        purchase_id,
+        purchase_date,
+        total_amount,
+        product_id,
+        product_name,
+        category,
+        description,
+        image_url,
+        price,
+        quantity,
+        subtotal,
+      } = row;
 
-      return {
-        ...purchase, // Información de la compra (purchases)
-        items: itemsResult.rows, // Detalles de los productos comprados (purchase_items)
-      };
-    }));
+      // Encuentra la compra en el acumulador o crea una nueva
+      let purchase = acc.find(p => p.id === purchase_id);
+      if (!purchase) {
+        purchase = {
+          id: purchase_id,
+          purchase_date,
+          total_amount,
+          items: [],
+        };
+        acc.push(purchase);
+      }
 
-    // Enviar la lista de compras y sus productos
+      // Añade el item a la compra correspondiente
+      purchase.items.push({
+        product_id,
+        product_name,
+        category,
+        description,
+        image_url,
+        price,
+        quantity,
+        subtotal,
+      });
+
+      return acc;
+    }, []);
+
     res.status(200).json(purchases);
   } catch (error) {
     console.error('Error al obtener el historial de compras:', error.message);
     res.status(500).json({ error: 'Hubo un problema al obtener el historial de compras.' });
   }
 });
-
-export default router;

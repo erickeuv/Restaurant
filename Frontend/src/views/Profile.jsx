@@ -9,7 +9,7 @@ const Profile = () => {
   const [userData, setUserData] = useState(null);
   const [purchaseHistory, setPurchaseHistory] = useState([]);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true); // Estado de carga inicial
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   // Redirige al login si no hay autenticación una vez que se verifica
@@ -41,17 +41,17 @@ const Profile = () => {
         } catch (err) {
           setError(err.response?.data?.error || 'Error al obtener los datos del usuario');
         } finally {
-          setLoading(false); // Finaliza la carga
+          setLoading(false);
         }
       } else {
-        setLoading(false); // Finaliza la carga si no hay autenticación
+        setLoading(false);
       }
     };
 
     fetchProfile();
   }, [isAuthenticated, token]);
 
-  if (loading) return <div className="text-center text-gray-500">Cargando...</div>; // Muestra una pantalla de carga
+  if (loading) return <div className="text-center text-gray-500">Cargando...</div>;
   if (error) return <div className="text-red-500 text-center">{error}</div>;
 
   return (
@@ -76,7 +76,10 @@ const Profile = () => {
         <ul className="mt-4 space-y-4">
           {purchaseHistory.map((purchase) => (
             <li key={purchase.id} className="bg-gray-100 p-4 rounded-lg shadow-sm">
-              <p className="font-semibold">Compra ID: {purchase.id} - Fecha: {new Date(purchase.purchase_date).toLocaleDateString()}</p>
+              <p className="font-semibold">
+                Compra ID: {purchase.id} - Fecha: {new Date(purchase.purchase_date).toLocaleDateString()}
+              </p>
+              <p className="font-semibold">Total: ${purchase.total_amount.toFixed(2)}</p> {/* Muestra el total de la compra */}
               <ul className="list-disc list-inside mt-2">
                 {purchase.items.map(item => (
                   <li key={item.product_id} className="text-sm text-gray-700">
