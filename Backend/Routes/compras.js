@@ -147,3 +147,6 @@ router.get('/historial', authMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Hubo un problema al obtener el historial de compras.' });
   }
 });
+
+export default router;
+
