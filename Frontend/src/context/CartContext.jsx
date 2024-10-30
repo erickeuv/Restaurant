@@ -1,30 +1,40 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { API_URL } from '../config';
+import { AuthContext } from '../context/AuthContext'; // Para obtener el user_id si está autenticado
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
+    const { userId, isAuthenticated } = useContext(AuthContext); // Obtener user_id y estado de autenticación
     const [cartItems, setCartItems] = useState(() => {
         const savedCart = localStorage.getItem('cartItems');
         return savedCart ? JSON.parse(savedCart) : [];
     });
 
-
+    // Guardar carrito en localStorage al cambiar cartItems
     useEffect(() => {
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }, [cartItems]);
 
-    // Función para guardar el carrito en el backend (opcional)
+    // Función para guardar el carrito en el backend
     const saveCartToBackend = async () => {
+        if (!isAuthenticated) return; // Solo guarda si el usuario está autenticado
+
         try {
             await axios.post(`${API_URL}/carrito`, {
-                items: cartItems.map(item => ({ productId: item.id, cantidad: item.quantity }))
+                user_id: userId,
+                items: cartItems.map(item => ({ productId: item.id, quantity: item.quantity }))
             });
         } catch (error) {
             console.error('Error al guardar el carrito:', error);
         }
     };
+
+    // Efecto para guardar el carrito en el backend cuando cartItems cambia
+    useEffect(() => {
+        saveCartToBackend();
+    }, [cartItems]);
 
     const addItem = (item) => {
         setCartItems((prevItems) => {
@@ -39,15 +49,10 @@ export const CartProvider = ({ children }) => {
                 return [...prevItems, { ...item, quantity: 1 }];
             }
         });
-        saveCartToBackend(); // Guarda el carrito cada vez que se agrega un artículo
     };
 
     const removeItem = (itemToRemove) => {
-        setCartItems((prevItems) => {
-            const newItems = prevItems.filter((item) => item.id !== itemToRemove.id);
-            saveCartToBackend(); // Guarda el carrito cada vez que se elimina un artículo
-            return newItems;
-        });
+        setCartItems((prevItems) => prevItems.filter((item) => item.id !== itemToRemove.id));
     };
 
     const decrementItem = (itemToDecrement) => {
@@ -64,7 +69,6 @@ export const CartProvider = ({ children }) => {
                 return prevItems.filter((item) => item.id !== itemToDecrement.id);
             }
         });
-        saveCartToBackend(); // Guarda el carrito después de decrementar un artículo
     };
 
     const incrementItem = (itemToIncrement) => {
@@ -75,7 +79,6 @@ export const CartProvider = ({ children }) => {
                     : item
             );
         });
-        saveCartToBackend(); // Guarda el carrito después de incrementar un artículo
     };
 
     const getTotal = () => {
@@ -84,7 +87,7 @@ export const CartProvider = ({ children }) => {
 
     const clearCart = () => {
         setCartItems([]);
-        localStorage.removeItem('cartItems'); // Opcional: eliminar el carrito del localStorage
+        localStorage.removeItem('cartItems');
     };
 
     return (
