@@ -1,54 +1,54 @@
 import React, { useContext, useState } from 'react';
 import { CartContext } from '../context/CartContext';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext'; // Para verificar si el usuario está autenticado
+import { useNavigate } from 'react-router-dom'; // Para redirigir si es necesario
 import axios from 'axios';
 import { API_URL } from '../config'; 
 
 const Cart = () => {
-    const { cartItems, getTotal, clearCart, removeItem, decrementItem, incrementItem } = useContext(CartContext);
-    const { isAuthenticated, token } = useContext(AuthContext);
+    const { cartItems, getTotal, clearCart, removeItem, decrementItem, incrementItem } = useContext(CartContext); // Asegúrate de que clearCart esté disponible aquí
+    const { isAuthenticated, token } = useContext(AuthContext); // Obtener el token y el estado de autenticación
     const navigate = useNavigate();
-    const [isProcessing, setIsProcessing] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false); // Nuevo estado para evitar pagos duplicados
 
     const handlePayment = async () => {
         if (!isAuthenticated) {
-            navigate('/login'); // Redirige al login si no está autenticado
+            // Redirigir a la página de login si el usuario no está autenticado
+            navigate('/login');
             return;
         }
-    
+
         try {
-            setIsProcessing(true);
-    
+            setIsProcessing(true); // Evitar múltiples clics en "Pagar"
+
+
+            // Enviar los detalles de la compra al backend
             const purchaseData = {
-                user_id: userId, // Solo enviar user_id si está autenticado
-                cart: cartItems.map(item => ({
-                    productId: item.id,
-                    quantity: item.quantity,
-                    price: item.price,
-                    name: item.name
-                })),
-                totalAmount: getTotal(),
+                cart: cartItems, // Incluye los artículos del carrito
+                totalAmount: getTotal(), // Incluye el total
             };
-    
+
+            // Llamar a la API de compras para registrar la compra
             await axios.post(`${API_URL}/compras`, purchaseData, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    Authorization: `Bearer ${token}`, // Enviar el token para autenticación
+                    'Content-Type': 'application/json' // Asegúrate de que el content type es correcto
                 }
             });
-    
+
+            // Limpiar el carrito después de la compra
             clearCart();
+
+            // Mostrar un mensaje de éxito o redirigir al historial de compras
             alert('Compra registrada exitosamente');
-            navigate('/profile');
+            navigate('/profile'); // Opcional: redirigir al perfil o historial de compras
         } catch (error) {
             console.error('Error al registrar la compra:', error);
-            alert(error.response?.data?.error || 'Ocurrió un error al procesar la compra. Inténtalo de nuevo.');
+            alert('Ocurrió un error al procesar la compra');
         } finally {
-            setIsProcessing(false);
+            setIsProcessing(false); // Permitir pagos nuevamente después de procesar
         }
     };
-    
 
     return (
         <div className="sticky top-48 bg-white shadow-lg rounded-lg p-4 m-4 w-full max-w-xs">
@@ -61,6 +61,7 @@ const Cart = () => {
                         {cartItems.map((item, index) => (
                             <li key={index} className="py-2 flex justify-between items-center">
                                 <div className="flex items-center">
+
                                     <div>
                                         <span className="block font-semibold">{item.name}</span>
                                         <span className="text-sm text-gray-500 font-semibold">${Number(item.price).toFixed(2)}</span>
@@ -113,7 +114,7 @@ const Cart = () => {
                         <button 
                             className="mt-4 w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2 rounded"
                             onClick={handlePayment} 
-                            disabled={isProcessing}
+                            disabled={isProcessing} // Deshabilitar el botón durante el procesamiento
                         >
                             {isProcessing ? 'Procesando...' : 'Pagar'}
                         </button>
