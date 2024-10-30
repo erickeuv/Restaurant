@@ -32,7 +32,6 @@ function Menu() {
           </div>
         </main>
         
-        <footer className="bg-gray-900 text-white p-4"> {/* Footer aquí */} </footer>
       </div>
     </CartProvider>
   );

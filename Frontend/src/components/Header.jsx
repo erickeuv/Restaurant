@@ -16,7 +16,7 @@ function Header() {
   };
 
   return (
-    <nav className="w-full bg-gray-900 p-4 text-white sticky top-0 shadow-lg z-[9999]">
+    <nav className="w-full bg-gray-900  p-4 text-white sticky top-0 shadow-lg z-[9999]">
       <div className="flex items-center justify-between mx-auto max-w-7xl">
         {/* Logo alineado a la izquierda */}
         <Link to="/" className="cursor-pointer text-base font-semibold">

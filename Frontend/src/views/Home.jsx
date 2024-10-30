@@ -18,7 +18,7 @@ const Home = () => {
         <h1 className="text-3xl md:text-5xl font-bold">Bienvenidos a Sushi & Burger Home</h1>
         <p className="mt-2 text-lg md:text-xl">Deliciosas comidas para todos los gustos</p>
         <Link to="/Menu">
-          <button className="mt-4 bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+          <button className="mt-4 bg-gray-900 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded transition duration-300">
             Ver Menú
           </button>
         </Link>

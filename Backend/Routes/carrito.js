@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
   const { productId, cantidad } = req.body; // Quitamos userId
   try {
     await pool.query(
-      `INSERT INTO detalle_carrito (product_id, cantidad) 
+      `INSERT INTO purchase_items (product_id, cantidad) 
       VALUES ($1, $2)
       ON CONFLICT (product_id) 
       DO UPDATE SET cantidad = detalle_carrito.cantidad + EXCLUDED.cantidad`,
